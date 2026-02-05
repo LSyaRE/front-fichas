@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 @Injectable({
     providedIn: 'root'
 })
 export class ApiService {
-    private apiUrl = 'http://iglesia-back-fichas-9os3qe:3000/api';
+    private apiUrl = environment.apiUrl;
 
     constructor(private http: HttpClient) { }
 

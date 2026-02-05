@@ -9,6 +9,7 @@ RUN npm install
 
 # Copiar código y construir
 COPY . .
+RUN npm run config
 RUN npm run build
 
 # Stage 2: Serve
