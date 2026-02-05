@@ -1,0 +1,175 @@
+<div class="min-h-screen bg-gray-50 font-sans">
+    <!-- Nav -->
+    <nav class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <span class="text-2xl mr-2">🏥</span>
+                    <h1 class="text-xl font-bold text-gray-800 tracking-tight">Panel Administrativo</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm text-gray-500">Hola, {{ auth.currentUser()?.username }}</span>
+                    <button (click)="logout()"
+                        class="text-sm text-red-600 hover:text-red-800 font-medium transition-colors">
+                        Cerrar Sesión
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div
+                class="bg-white overflow-hidden shadow-sm rounded-xl border border-gray-100 p-6 hover:shadow-md transition-shadow">
+                <dt class="text-sm font-medium text-gray-500 truncate">Total Fichas</dt>
+                <dd class="mt-1 text-3xl font-semibold text-gray-900">{{ stats.totalRecords || 0 }}</dd>
+            </div>
+            <div
+                class="bg-white overflow-hidden shadow-sm rounded-xl border border-gray-100 p-6 hover:shadow-md transition-shadow">
+                <dt class="text-sm font-medium text-gray-500 truncate">Tokens Pendientes</dt>
+                <dd class="mt-1 text-3xl font-semibold text-indigo-600">{{ stats.pendingTokens || 0 }}</dd>
+            </div>
+            <div
+                class="bg-white overflow-hidden shadow-sm rounded-xl border border-gray-100 p-6 hover:shadow-md transition-shadow">
+                <dt class="text-sm font-medium text-gray-500 truncate">Fichas Recientes (7d)</dt>
+                <dd class="mt-1 text-3xl font-semibold text-green-600">{{ stats.recentRecords || 0 }}</dd>
+            </div>
+            <div
+                class="bg-white overflow-hidden shadow-sm rounded-xl border border-gray-100 p-6 hover:shadow-md transition-shadow flex items-center justify-center bg-indigo-50">
+                <button (click)="generateLink()"
+                    class="w-full h-full flex flex-col items-center justify-center text-indigo-700 hover:text-indigo-900 transition-colors">
+                    <span class="text-2xl mb-1">+</span>
+                    <span class="font-bold">Generar Nuevo Link</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="bg-white shadow-sm rounded-xl border border-gray-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">Fichas Médicas Registradas</h3>
+                <button (click)="loadRecords()"
+                    class="text-sm text-indigo-600 hover:text-indigo-800">Actualizar</button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Nombre</th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Fecha Nacimiento</th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Sexo</th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Sangre</th>
+                            <th scope="col"
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Fecha Registro</th>
+                            <th scope="col"
+                                class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <tr *ngFor="let record of records" class="hover:bg-gray-50 transition-colors">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-900">{{ record.nombre }}</div>
+                                <div class="text-xs text-gray-500">{{ record.funcion || '-' }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ record.fechaNacimiento | date:'shortDate' }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ record.sexo }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <span
+                                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                    {{ record.tipoSangre || 'N/A' }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ record.createdAt | date:'short' }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <a [routerLink]="['/admin/records', record._id]"
+                                    class="text-indigo-600 hover:text-indigo-900 mr-4">Ver Detalle</a>
+                                <!-- <button class="text-red-600 hover:text-red-900">Eliminar</button> -->
+                            </td>
+                        </tr>
+                        <tr *ngIf="records.length === 0 && !isLoading">
+                            <td colspan="6" class="px-6 py-12 text-center text-gray-500">
+                                No hay fichas registradas aún.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal -->
+    <div *ngIf="showModal" class="fixed z-50 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog"
+        aria-modal="true">
+        <!-- Backdrop -->
+        <div class="fixed inset-0 bg-gray-500/75 transition-opacity" aria-hidden="true" (click)="closeModal()"></div>
+
+        <!-- Modal Panel -->
+        <div class="flex min-h-screen items-center justify-center p-4 text-center">
+            <div
+                class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:w-full sm:max-w-lg">
+                <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div
+                            class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10">
+                            <svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                            </svg>
+                        </div>
+                        <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
+                            <h3 class="text-base font-semibold leading-6 text-gray-900" id="modal-title">Link Generado
+                                Exitosamente</h3>
+                            <div class="mt-2">
+                                <p class="text-sm text-gray-500">
+                                    Copie el siguiente enlace y envíelo a la persona correspondiente. Este enlace es de
+                                    uso único y expirará en 72 horas.
+                                </p>
+                                <div class="mt-4 flex rounded-md shadow-sm">
+                                    <input type="text" readonly [value]="generatedUrl"
+                                        class="block w-full rounded-l-md border-0 py-1.5 pl-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 bg-gray-50">
+                                    <button (click)="copyToClipboard()" type="button"
+                                        class="relative -ml-px inline-flex items-center gap-x-1.5 rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 bg-gray-100">
+                                        <svg class="-ml-0.5 h-5 w-5 text-gray-400" viewBox="0 0 20 20"
+                                            fill="currentColor" aria-hidden="true">
+                                            <path fill-rule="evenodd"
+                                                d="M15.988 3.012A2.25 2.25 0 0 1 18 5.25v6.5A2.25 2.25 0 0 1 15.75 14H13.5V7A2.5 2.5 0 0 0 11 4.5H8.128a2.252 2.252 0 0 1 1.884-1.488A2.25 2.25 0 0 1 12.25 1h1.5a2.25 2.25 0 0 1 2.238 2.012ZM11.5 3.25a.75.75 0 0 1 .75-.75h1.5a.75.75 0 0 1 .75.75v.25h-3v-.25Z"
+                                                clip-rule="evenodd" />
+                                            <path fill-rule="evenodd"
+                                                d="M2 7a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V7Zm2 3.25a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75Zm0 3.5a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75Z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                        Copiar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                    <button type="button" (click)="closeModal()"
+                        class="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 sm:ml-3 sm:w-auto">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,309 @@
+<div class="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8 font-sans">
+
+    <!-- Nav / Header -->
+    <div class="max-w-4xl mx-auto mb-6 flex justify-between items-center print:hidden">
+        <a routerLink="/admin/dashboard"
+            class="flex items-center text-indigo-600 hover:text-indigo-800 transition-colors cursor-pointer">
+            <svg class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Volver al Panel
+        </a>
+        <button onclick="window.print()"
+            class="bg-gray-800 text-white px-4 py-2 rounded-lg shadow hover:bg-gray-700 transition-colors flex items-center">
+            <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+            </svg>
+            Imprimir Ficha
+        </button>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="flex justify-center items-center h-64">
+        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-600"></div>
+    </div>
+
+    <!-- Error -->
+    <div *ngIf="!isLoading && error" class="max-w-md mx-auto bg-white p-8 rounded-xl shadow-lg text-center">
+        <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+            <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        </div>
+        <h3 class="text-lg leading-6 font-medium text-gray-900">Error</h3>
+        <p class="mt-2 text-sm text-gray-500">{{ error }}</p>
+    </div>
+
+    <!-- Main Form (Read Only) -->
+    <div *ngIf="!isLoading && !error" class="max-w-4xl mx-auto print:max-w-none print:w-full">
+        <div class="mb-8 text-center print:text-left print:mb-4">
+            <div class="flex items-center justify-center print:justify-start">
+                <span class="text-3xl text-indigo-600 mr-3">🩺</span>
+                <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Ficha Médica</h1>
+            </div>
+            <div class="mt-2 text-sm text-gray-500 flex justify-center print:justify-start gap-4">
+                <span><strong>ID:</strong> {{ id }}</span>
+                <span><strong>Fecha:</strong> {{ record?.createdAt | date:'short' }}</span>
+            </div>
+        </div>
+
+        <form [formGroup]="form" class="space-y-8 print:space-y-4">
+
+            <!-- Section 1: Información General -->
+            <section
+                class="bg-white shadow-xl rounded-2xl overflow-hidden print:shadow-none print:border print:border-gray-300">
+                <div
+                    class="bg-indigo-600 px-6 py-4 print:bg-gray-100 print:text-gray-900 print:border-b print:border-gray-300">
+                    <h2 class="text-xl font-bold text-white flex items-center print:text-gray-900"><span
+                            class="mr-2">📌</span> Información General</h2>
+                </div>
+                <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 print:grid-cols-2 print:gap-4 print:p-4">
+                    <div class="col-span-1 md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700">Nombre y Apellido</label>
+                        <input formControlName="nombre" type="text"
+                            class="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm border py-2 px-3">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Fecha de Nacimiento</label>
+                        <input formControlName="fechaNacimiento" type="date"
+                            class="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm border py-2 px-3">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Función</label>
+                        <input formControlName="funcion" type="text"
+                            class="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm border py-2 px-3">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Sexo</label>
+                        <input formControlName="sexo" type="text"
+                            class="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm border py-2 px-3">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Estado Civil</label>
+                        <input formControlName="estadoCivil" type="text"
+                            class="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm border py-2 px-3">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 2: Plan de Salud -->
+            <section
+                class="bg-white shadow-xl rounded-2xl overflow-hidden print:shadow-none print:border print:border-gray-300 print:break-inside-avoid">
+                <div class="bg-emerald-600 px-6 py-4 print:bg-gray-100 print:border-b print:border-gray-300">
+                    <h2 class="text-xl font-bold text-white flex items-center print:text-gray-900"><span
+                            class="mr-2">🏥</span> Plan de Salud</h2>
+                </div>
+                <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 print:grid-cols-2 print:gap-4 print:p-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Plan de Salud</label>
+                        <input formControlName="planSalud" type="text"
+                            class="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm border py-2 px-3">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Nombre del Plan</label>
+                        <input formControlName="nombrePlan" type="text"
+                            class="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm border py-2 px-3">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Tarjeta de Salud</label>
+                        <input formControlName="tarjetaSalud" type="text"
+                            class="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm border py-2 px-3">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Organismo Nacional de Salud</label>
+                        <input formControlName="organismoSalud" type="text"
+                            class="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm border py-2 px-3">
+                    </div>
+                    <div class="col-span-1 md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700">Tipo de Sangre</label>
+                        <input formControlName="tipoSangre" type="text"
+                            class="mt-1 block w-40 rounded-md border-gray-300 bg-gray-50 shadow-sm border py-2 px-3 font-bold text-center">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 3: Historial Enfermedades -->
+            <section
+                class="bg-white shadow-xl rounded-2xl overflow-hidden print:shadow-none print:border print:border-gray-300 print:break-inside-avoid">
+                <div class="bg-rose-500 px-6 py-4 print:bg-gray-100 print:border-b print:border-gray-300">
+                    <h2 class="text-xl font-bold text-white flex items-center print:text-gray-900"><span
+                            class="mr-2">💉</span> Historial de Enfermedades</h2>
+                </div>
+                <div class="p-6 print:p-4">
+                    <div class="flex flex-wrap gap-2">
+                        <!-- Show only checked ones for clarity in View mode -->
+                        <ng-container *ngFor="let enfermedad of diseasesList">
+                            <span *ngIf="isChecked(enfermedad, 'enfermedades')"
+                                class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-rose-100 text-rose-800 border border-rose-200">
+                                {{ enfermedad }}
+                            </span>
+                        </ng-container>
+                        <span *ngIf="form.get('enfermedades')?.value?.length === 0" class="text-gray-500 italic">Ninguna
+                            registrada.</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 4: Condiciones Médicas -->
+            <section
+                class="bg-white shadow-xl rounded-2xl overflow-hidden print:shadow-none print:border print:border-gray-300 print:break-inside-avoid">
+                <div class="bg-amber-500 px-6 py-4 print:bg-gray-100 print:border-b print:border-gray-300">
+                    <h2 class="text-xl font-bold text-white flex items-center print:text-gray-900"><span
+                            class="mr-2">🩸</span> Condiciones Médicas</h2>
+                </div>
+                <div class="p-6 space-y-6 print:p-4 print:space-y-4">
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="border p-3 rounded-lg bg-gray-50">
+                            <span class="font-medium text-gray-700">Transfusión:</span>
+                            <span class="ml-2 font-bold">{{ form.get('transfusion')?.value }}</span>
+                        </div>
+                        <div class="border p-3 rounded-lg bg-gray-50">
+                            <div class="flex justify-between">
+                                <span class="font-medium text-gray-700">Cardiaco:</span>
+                                <span class="font-bold">{{ form.get('cardiaco')?.value }}</span>
+                            </div>
+                            <p *ngIf="form.get('cardiacoMed')?.value" class="text-sm mt-1 text-gray-600 border-t pt-1">
+                                {{ form.get('cardiacoMed')?.value }}</p>
+                        </div>
+                        <div class="border p-3 rounded-lg bg-gray-50">
+                            <div class="flex justify-between">
+                                <span class="font-medium text-gray-700">Diabetes:</span>
+                                <span class="font-bold">{{ form.get('diabetes')?.value }}</span>
+                            </div>
+                            <p *ngIf="form.get('diabetesMed')?.value" class="text-sm mt-1 text-gray-600 border-t pt-1">
+                                {{ form.get('diabetesMed')?.value }}</p>
+                        </div>
+                        <div class="border p-3 rounded-lg bg-gray-50">
+                            <div class="flex justify-between">
+                                <span class="font-medium text-gray-700">Renal:</span>
+                                <span class="font-bold">{{ form.get('renal')?.value }}</span>
+                            </div>
+                            <p *ngIf="form.get('renalMed')?.value" class="text-sm mt-1 text-gray-600 border-t pt-1">{{
+                                form.get('renalMed')?.value }}</p>
+                        </div>
+                        <div class="border p-3 rounded-lg bg-gray-50 col-span-1 md:col-span-2">
+                            <div class="flex justify-between">
+                                <span class="font-medium text-gray-700">Psicológico:</span>
+                                <span class="font-bold">{{ form.get('psicologico')?.value }}</span>
+                            </div>
+                            <p *ngIf="form.get('psicologicoMed')?.value"
+                                class="text-sm mt-1 text-gray-600 border-t pt-1">{{ form.get('psicologicoMed')?.value }}
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- Section 5: Alergias -->
+            <section
+                class="bg-white shadow-xl rounded-2xl overflow-hidden print:shadow-none print:border print:border-gray-300 print:break-inside-avoid">
+                <div class="bg-teal-600 px-6 py-4 print:bg-gray-100 print:border-b print:border-gray-300">
+                    <h2 class="text-xl font-bold text-white flex items-center print:text-gray-900"><span
+                            class="mr-2">🌿</span> Alergias</h2>
+                </div>
+                <div class="p-6 space-y-4 print:p-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="p-3 bg-gray-50 rounded-lg border">
+                            <span class="block text-sm text-gray-500">Piel</span>
+                            <span class="font-bold">{{ form.get('alergiaPiel')?.value }}</span>
+                        </div>
+                        <div class="p-3 bg-gray-50 rounded-lg border">
+                            <span class="block text-sm text-gray-500">Alimentos</span>
+                            <span class="font-bold">{{ form.get('alergiaAlimentos')?.value }}</span>
+                        </div>
+                        <div class="p-3 bg-gray-50 rounded-lg border">
+                            <span class="block text-sm text-gray-500">Medicamentos</span>
+                            <span class="font-bold">{{ form.get('alergiaMedicamentos')?.value }}</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Lista de alergias</label>
+                            <div class="mt-1 p-3 bg-gray-50 rounded-md border min-h-[3em]">{{
+                                form.get('listaAlergias')?.value || '-' }}</div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Medicamentos alergias</label>
+                            <div class="mt-1 p-3 bg-gray-50 rounded-md border min-h-[3em]">{{
+                                form.get('medicamentosAlergias')?.value || '-' }}</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 6: Eventos Recientes -->
+            <section
+                class="bg-white shadow-xl rounded-2xl overflow-hidden print:shadow-none print:border print:border-gray-300 print:break-inside-avoid">
+                <div class="bg-blue-600 px-6 py-4 print:bg-gray-100 print:border-b print:border-gray-300">
+                    <h2 class="text-xl font-bold text-white flex items-center print:text-gray-900"><span
+                            class="mr-2">🚑</span> Eventos Recientes</h2>
+                </div>
+                <div class="p-6 space-y-6 print:p-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Problemas recientes</label>
+                            <div class="font-bold">{{ form.get('problemasRecientes')?.value }}</div>
+                            <div *ngIf="form.get('medicamentosRecientes')?.value"
+                                class="mt-1 text-sm bg-gray-50 p-2 rounded">{{ form.get('medicamentosRecientes')?.value
+                                }}</div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Lesión grave</label>
+                            <div class="font-bold">{{ form.get('lesionGrave')?.value }}</div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Fractura</label>
+                            <div class="font-bold">{{ form.get('fractura')?.value }}</div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Tiempo inmovilizado</label>
+                            <div class="font-bold">{{ form.get('tiempoInmovilizado')?.value || '-' }}</div>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Cirugías</label>
+                        <div class="mt-1 p-3 bg-gray-50 rounded-md border min-h-[3em]">{{ form.get('cirugias')?.value ||
+                            '-' }}</div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Hospitalización (5 años)</label>
+                        <div class="mt-1 p-3 bg-gray-50 rounded-md border min-h-[3em]">{{
+                            form.get('hospitalizacion')?.value || '-' }}</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 7: Discapacidad -->
+            <section
+                class="bg-white shadow-xl rounded-2xl overflow-hidden print:shadow-none print:border print:border-gray-300 print:break-inside-avoid">
+                <div class="bg-purple-600 px-6 py-4 print:bg-gray-100 print:border-b print:border-gray-300">
+                    <h2 class="text-xl font-bold text-white flex items-center print:text-gray-900"><span
+                            class="mr-2">♿</span> Discapacidad o Condición Especial</h2>
+                </div>
+                <div class="p-6 print:p-4 pb-12">
+                    <div class="flex flex-wrap gap-2 mb-6">
+                        <ng-container *ngFor="let disc of disabilitiesList">
+                            <span *ngIf="isChecked(disc, 'discapacidades')"
+                                class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800 border border-purple-200">
+                                {{ disc }}
+                            </span>
+                        </ng-container>
+                        <span *ngIf="form.get('discapacidades')?.value?.length === 0"
+                            class="text-gray-500 italic">Ninguna registrada.</span>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Observación</label>
+                        <div class="mt-1 p-3 bg-gray-50 rounded-md border min-h-[3em]">{{
+                            form.get('observacionDiscapacidad')?.value || '-' }}</div>
+                    </div>
+                </div>
+            </section>
+
+        </form>
+    </div>
+</div>
